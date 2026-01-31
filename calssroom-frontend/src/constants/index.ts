@@ -7,6 +7,7 @@ export const DEPARTMENTS = [
   "Art",
   "Physical Education",
   "Computer Science",
+  "English",
   "Biology",
   "Chemistry",
   "Physics",
