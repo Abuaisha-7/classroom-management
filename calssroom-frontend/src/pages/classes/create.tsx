@@ -11,7 +11,7 @@ import { Separator } from "@/components/ui/separator.tsx";
 import { classSchema } from "@/lib/schema.ts";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useBack } from "@refinedev/core";
-import { useForm } from "react-hook-form";
+import { useForm } from "@refinedev/react-hook-form";
 import * as z from "zod";
 
 import {
@@ -85,7 +85,10 @@ const Create = () => {
 
   const bannerPublicId = form.watch("bannerCldPubId");
 
-  const setBannerImage = (file, field) => {
+  const setBannerImage = (
+    file: { url: string; publicId: string } | null,
+    field: { onChange: (value: string) => void },
+  ) => {
     if (file) {
       field.onChange(file.url);
       form.setValue("bannerCldPubId", file.publicId, {
@@ -144,9 +147,7 @@ const Create = () => {
                                 }
                               : null
                           }
-                          onChange={(file: any, field: any) =>
-                            setBannerImage(file, field)
-                          }
+                          onChange={(file) => setBannerImage(file, field)}
                         />
                       </FormControl>
                       <FormMessage />
@@ -254,7 +255,9 @@ const Create = () => {
                     name="capacity"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>Capacity</FormLabel>
+                        <FormLabel>
+                          Capacity <span className="text-orange-600">*</span>
+                        </FormLabel>
                         <FormControl>
                           <Input
                             type="number"

@@ -37,6 +37,12 @@ const UploadWidget = ({
           clientAllowedFormats: ["png", "jpg", "jpeg", "webp"],
         },
         (error, result) => {
+          if (error) {
+            console.error("Upload failed:", error);
+            // Consider showing a user-facing error notification
+            return;
+          }
+
           if (!error && result.event === "success") {
             const payload: UploadWidgetValue = {
               url: result.info.secure_url,
@@ -45,7 +51,6 @@ const UploadWidget = ({
 
             setPreview(payload);
 
-            setDeleteToken(result.info.delete_token ?? null);
             onchangeRef.current?.(payload);
           }
         },
