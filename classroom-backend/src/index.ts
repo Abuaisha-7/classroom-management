@@ -1,24 +1,31 @@
-import express from 'express';
-import subjectsRouter from './routes/subjects';
 import cors from "cors";
+import "dotenv/config";
+import express from "express";
+import subjectsRouter from "./routes/subjects";
 
 const app = express();
 const PORT = 3000;
 
-app.use(cors({
-  origin: process.env.FRONTEND_URL,
-  methods: ['GET', 'POST', 'PUT', 'DELETE'],
-  credentials: true,
-}));
+const FRONTEND_URL = process.env.FRONTEND_URL;
 
+if (!FRONTEND_URL) {
+  console.warn("Warning: FRONTEND_URL is not set. CORS may block requests.");
+}
 
+app.use(
+  cors({
+    origin: FRONTEND_URL || 'http://localhost:5173',
+    methods: ["GET", "POST", "PUT", "DELETE"],
+    credentials: true,
+  }),
+);
 
 app.use(express.json());
 
-app.use('/api/subjects', subjectsRouter)
+app.use("/api/subjects", subjectsRouter);
 
-app.get('/', (req, res) => {
-  res.send('Hello, welcome to the Classroom API!');
+app.get("/", (req, res) => {
+  res.send("Hello, welcome to the Classroom API!");
 });
 
 app.listen(PORT, () => {
