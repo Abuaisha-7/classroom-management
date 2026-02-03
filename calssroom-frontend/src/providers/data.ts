@@ -1,5 +1,6 @@
 import { BACKEND_BASE_URL } from "@/constants";
 import { ListResponse } from "@/types";
+
 import { createDataProvider, CreateDataProviderOptions } from "@refinedev/rest";
 
 const Options: CreateDataProviderOptions = {
