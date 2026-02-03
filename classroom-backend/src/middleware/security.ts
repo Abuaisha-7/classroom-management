@@ -55,28 +55,31 @@ const securityMiddleware = async (
     const decision = await client.protect(arcjetRequest);
 
     if (decision.isDenied() && decision.reason.isBot()) {
-      return res
-        .status(403)
-        .json({
-          error: "Forbidden",
-          message: "Automated requests are not allowed.",
-        });
+      return res.status(403).json({
+        error: "Forbidden",
+        message: "Automated requests are not allowed.",
+      });
     }
 
     if (decision.isDenied() && decision.reason.isShield()) {
-      return res
-        .status(403)
-        .json({
-          error: "Forbidden",
-          message: "Request blocked by security policy",
-        });
+      return res.status(403).json({
+        error: "Forbidden",
+        message: "Request blocked by security policy",
+      });
     }
 
     if (decision.isDenied() && decision.reason.isRateLimit()) {
-      return res.status(403).json({ error: "Too many requests", message });
+      return res.status(429).json({ error: "Too many requests", message });
     }
 
-    next();
+    if (decision.isDenied()) {
+      return res.status(403).json({
+        error: "Forbidden",
+        message: "Request denied by security policy.",
+      });
+    }
+
+    return next();
   } catch (e) {
     console.error("Arcjet middleware error:", e);
     res.status(500).json({
