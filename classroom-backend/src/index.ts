@@ -1,3 +1,6 @@
+import AgentAPI from "apminsight";
+AgentAPI.config();
+
 import cors from "cors";
 import "dotenv/config";
 import express from "express";
