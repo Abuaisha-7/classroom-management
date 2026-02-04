@@ -4,9 +4,9 @@ AgentAPI.config();
 import cors from "cors";
 import "dotenv/config";
 import express from "express";
-import subjectsRouter from "./routes/subjects";
-import securityMiddleware from "./middleware/security";
-import { auth } from "./lib/auth";
+import subjectsRouter from "./routes/subjects.js";
+import securityMiddleware from "./middleware/security.js";
+import { auth } from "./lib/auth.js";
 import { toNodeHandler } from "better-auth/node";
 
 const app = express();
