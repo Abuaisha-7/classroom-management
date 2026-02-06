@@ -5,6 +5,10 @@ import { classes, subjects, user } from "../db/schema/index.js";
 
 const route = express.Router();
 
+function escapeLike(value: string): string {
+  return value.replace(/[%_]/g, "\\$&");
+}
+
 route.post("/", async (req, res) => {
   try {
     const [createdClass] = await db
@@ -45,8 +49,8 @@ route.get("/", async (req, res) => {
     if (search) {
       filterConditions.push(
         or(
-          ilike(classes.name, `%${search}%`),
-          ilike(classes.inviteCode, `%${search}%`),
+          ilike(classes.name, `%${escapeLike(String(search))}%`),
+          ilike(classes.inviteCode, `%${escapeLike(String(search))}%`),
         ),
       );
     }
@@ -54,13 +58,17 @@ route.get("/", async (req, res) => {
     // if subject filter exists, filter by subject name
 
     if (subject) {
-      filterConditions.push(ilike(subjects.name, `%${subject}%`));
+      filterConditions.push(
+        ilike(subjects.name, `%${escapeLike(String(subject))}%`),
+      );
     }
 
     // if  teacher exists, filter by teacher name
 
     if (teacher) {
-      filterConditions.push(ilike(user.name, `%${teacher}%`));
+      filterConditions.push(
+        ilike(user.name, `%${escapeLike(String(teacher))}%`),
+      );
     }
 
     // Combine all filter conditions using AND
@@ -81,7 +89,7 @@ route.get("/", async (req, res) => {
       .select({
         ...getTableColumns(classes),
         subject: { ...getTableColumns(subjects) },
-        teacher: { ...getTableColumns(user) },
+        teacher: { id: user.id, name: user.name, image: user.image },
       })
       .from(classes)
       .leftJoin(subjects, eq(classes.subjectId, subjects.id))
