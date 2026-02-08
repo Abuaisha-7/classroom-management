@@ -40,6 +40,7 @@ function App() {
               options={{
                 syncWithLocation: true,
                 warnWhenUnsavedChanges: true,
+                title: { text: "Classroom" },
               }}
               resources={[
                 {
