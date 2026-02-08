@@ -113,6 +113,7 @@ function MobileHeader() {
       </div>
 
       <ThemeToggle className={cn("h-8", "w-8")} />
+       <UserDropdown />
     </header>
   );
 }
