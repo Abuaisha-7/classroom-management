@@ -1,18 +1,13 @@
-import { useRegister, useLink } from "@refinedev/core";
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import * as z from "zod";
+import { InputPassword } from "@/components/refine-ui/form/input-password";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import {
   Card,
   CardContent,
-  CardHeader,
-  CardTitle,
   CardDescription,
   CardFooter,
+  CardHeader,
+  CardTitle,
 } from "@/components/ui/card";
-import { InputPassword } from "@/components/refine-ui/form/input-password";
 import {
   Form,
   FormControl,
@@ -21,10 +16,15 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
+import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useLink, useRegister } from "@refinedev/core";
+import { useForm } from "react-hook-form";
+import * as z from "zod";
 
-import { ROLE_OPTIONS } from "@/constants";
 import UploadWidget from "@/components/upload-widget";
+import { ROLE_OPTIONS } from "@/constants";
 import { UserRole } from "@/types";
 import { toast } from "sonner";
 
@@ -58,36 +58,35 @@ export const SignUpForm = () => {
   const imagePublicId = form.watch("imageCldPubId");
 
   const onSubmit = async (values: RegisterFormValues) => {
-    try {
-      register(
-        {
-          ...values,
-          name: values.name,
-          image: values.image || undefined,
-          imageCldPubId: values.imageCldPubId || undefined,
-        },
-        {
-          onSuccess: (data) => {
-            if (data.success === false) {
-              toast.error(data.error?.message, {
-                richColors: true,
-              });
-              return;
-            }
-
-            toast.success("Account created successfully!", {
+    register(
+      {
+        ...values,
+        image: values.image || undefined,
+        imageCldPubId: values.imageCldPubId || undefined,
+      },
+      {
+        onSuccess: (data) => {
+          if (data.success === false) {
+            toast.error(data.error?.message, {
               richColors: true,
             });
-            form.reset();
-          },
-        }
-      );
-    } catch (error) {
-      console.error("Registration error:", error);
-      toast.error("Registration failed", {
-        richColors: true,
-      });
-    }
+            return;
+          }
+
+          toast.success("Account created successfully!", {
+            richColors: true,
+          });
+          form.reset();
+        },
+
+        onError: (error) => {
+          console.error("Registration error:", error);
+          toast.error("Registration failed", {
+            richColors: true,
+          });
+        },
+      },
+    );
   };
 
   return (
@@ -124,7 +123,7 @@ export const SignUpForm = () => {
                               onClick={() => field.onChange(role.value)}
                               className={cn(
                                 "role-button",
-                                field.value === role.value && "is-active"
+                                field.value === role.value && "is-active",
                               )}
                             >
                               <role.icon />

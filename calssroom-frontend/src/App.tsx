@@ -79,10 +79,7 @@ function App() {
 
                 <Route
                   element={
-                    <Authenticated
-                      key="private-routes"
-                      fallback={<LoginPage />}
-                    >
+                    <Authenticated key="private-routes" redirectOnFail="/login">
                       <Layout>
                         <Outlet />
                       </Layout>

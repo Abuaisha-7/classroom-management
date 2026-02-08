@@ -1,26 +1,33 @@
+import { inferAdditionalFields } from "better-auth/client/plugins";
 import { createAuthClient } from "better-auth/react";
-import { BACKEND_BASE_URL, USER_ROLES } from "../constants";
+import z from "zod";
+import { BACKEND_BASE_URL } from "../constants";
 
 export const authClient = createAuthClient({
-  baseURL: `${BACKEND_BASE_URL}auth`,
-  user: {
-    additionalFields: {
-      role: {
-        type: USER_ROLES,
-        required: true,
-        defaultValue: "student",
-        input: true,
+  baseURL: `${BACKEND_BASE_URL.replace(/\/$/, "")}/auth`,
+  plugins: [
+    inferAdditionalFields({
+      user: {
+        role: {
+          type: "string",
+          required: true,
+          defaultValue: "student",
+          input: false,
+          validator: {
+            output: z.enum(["student", "teacher", "admin"]),
+          },
+        },
+        department: {
+          type: "string",
+          required: false,
+          input: true,
+        },
+        imageCldPubId: {
+          type: "string",
+          required: false,
+          input: true,
+        },
       },
-      department: {
-        type: "string",
-        required: false,
-        input: true,
-      },
-      imageCldPubId: {
-        type: "string",
-        required: false,
-        input: true,
-      },
-    },
-  },
+    }),
+  ],
 });

@@ -54,6 +54,7 @@ export const SignInForm = () => {
     login({
       email: values.email,
       password: values.password,
+      remember: values.rememberMe,
     });
   };
 
