@@ -27,6 +27,10 @@ import SubjectEditPage from "./pages/subjects/edit";
 import SubjectShowDetail from "./pages/subjects/show";
 import { authProvider } from "./providers/auth";
 import dataProvider from "./providers/data";
+import DepartmentsListPage from "./pages/departments/list";
+import DepartmentCreatePage from "./pages/departments/create";
+import DepartmentDetailPage from "./pages/departments/show";
+import DepartmentEditPage from "./pages/departments/edit";
 
 function App() {
   return (
@@ -58,7 +62,16 @@ function App() {
                   show: "/subjects/show/:id",
                   meta: { label: "Subjects", icon: <BookOpen /> },
                 },
-                
+                 {
+                  name: "departments",
+                  list: "/departments",
+                  show: "/departments/show/:id",
+                  create: "/departments/create",
+                  meta: {
+                    label: "Departments",
+                    icon: <Building2 />,
+                  },
+                },
                 {
                   name: "classes",
                   list: "/classes",
@@ -99,6 +112,13 @@ function App() {
                     <Route path="create" element={<SubjectsCreate />} />
                     <Route path="show/:id" element={<SubjectShowDetail />} />
                     <Route path="edit/:id" element={<SubjectEditPage />} />
+                  </Route>
+
+                  <Route path="departments">
+                    <Route index element={<DepartmentsListPage />} />
+                    <Route path="create" element={<DepartmentCreatePage />} />
+                    <Route path="show/:id" element={<DepartmentDetailPage />} />
+                    <Route path="edit/:id" element={<DepartmentEditPage />} />
                   </Route>
 
                   <Route path="classes">
