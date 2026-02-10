@@ -67,7 +67,7 @@ const DepartmentsListPage = () => {
           const description = getValue<string>();
 
           return description ? (
-            <span className="truncate line-clamp-2">{description}</span>
+            <span className="line-clamp-2">{description}</span>
           ) : (
             <span className="text-muted-foreground">No description</span>
           );
@@ -148,12 +148,11 @@ const DepartmentsListPage = () => {
               value={searchQuery}
               onChange={(event) => setSearchQuery(event.target.value)}
             />
-            
           </div>
-          <CreateButton resource="departments"/>
+          <CreateButton resource="departments" />
         </div>
       </div>
-      <DataTable table={departmentsTable}/>
+      <DataTable table={departmentsTable} />
     </ListView>
   );
 };

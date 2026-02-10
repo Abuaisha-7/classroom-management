@@ -34,7 +34,7 @@ router.get("/", async (req, res) => {
 
     // Count query with required join to subjects and identical where clause
     const countResult = await db
-      .select({ count: sql<number>`count(*)` })
+      .select({ count: sql<number>`cast(count(*) as int)` })
       .from(departments)
       .where(whereClause);
 
@@ -72,12 +72,19 @@ router.get("/", async (req, res) => {
 // route to create a new department
 router.post("/", async (req, res) => {
   try {
+    const { code, name, description } = req.body;
+
+    if (!code || !name) {
+      res.status(400).json({ error: "Code and name are required." });
+      return;
+    }
+
     const [createdDept] = await db
       .insert(departments)
-      .values({ ...req.body })
+      .values({ code, name, description })
       .returning({ id: departments.id });
 
-    if (!createdDept) throw Error;
+    if (!createdDept) throw new Error("Department creation returned no result");
 
     res.status(201).json({ data: createdDept });
   } catch (e) {
