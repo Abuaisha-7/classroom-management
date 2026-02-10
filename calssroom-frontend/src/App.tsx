@@ -23,6 +23,10 @@ import RegisterPage from "./pages/register";
 import SubjectsCreate from "./pages/subjects/create";
 import SubjectsList from "./pages/subjects/list";
 
+import DepartmentCreatePage from "./pages/departments/create";
+import DepartmentEditPage from "./pages/departments/edit";
+import DepartmentsListPage from "./pages/departments/list";
+import DepartmentDetailPage from "./pages/departments/show";
 import SubjectEditPage from "./pages/subjects/edit";
 import SubjectShowDetail from "./pages/subjects/show";
 import { authProvider } from "./providers/auth";
@@ -58,7 +62,17 @@ function App() {
                   show: "/subjects/show/:id",
                   meta: { label: "Subjects", icon: <BookOpen /> },
                 },
-                
+                {
+                  name: "departments",
+                  list: "/departments",
+                  show: "/departments/show/:id",
+                  create: "/departments/create",
+                  edit: "/departments/edit/:id",
+                  meta: {
+                    label: "Departments",
+                    icon: <Building2 />,
+                  },
+                },
                 {
                   name: "classes",
                   list: "/classes",
@@ -99,6 +113,13 @@ function App() {
                     <Route path="create" element={<SubjectsCreate />} />
                     <Route path="show/:id" element={<SubjectShowDetail />} />
                     <Route path="edit/:id" element={<SubjectEditPage />} />
+                  </Route>
+
+                  <Route path="departments">
+                    <Route index element={<DepartmentsListPage />} />
+                    <Route path="create" element={<DepartmentCreatePage />} />
+                    <Route path="show/:id" element={<DepartmentDetailPage />} />
+                    <Route path="edit/:id" element={<DepartmentEditPage />} />
                   </Route>
 
                   <Route path="classes">
