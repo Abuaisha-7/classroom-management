@@ -35,6 +35,10 @@ const Options: CreateDataProviderOptions = {
 
         const value = String(filter.value);
 
+        if (field === "role") {
+          params.role = value;
+        }
+
         if (resource === "users") {
           if (field === "role") params.role = value;
         }

@@ -10,6 +10,7 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
+import { Input } from "@/components/ui/input";
 import {
   Select,
   SelectContent,
@@ -18,6 +19,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Separator } from "@/components/ui/separator";
+import { Textarea } from "@/components/ui/textarea";
 import { Department } from "@/types";
 import { zodResolver } from "@hookform/resolvers/zod";
 import {
@@ -109,7 +111,7 @@ const SubjectsCreate = () => {
 
           <CardContent className="mt-7">
             <Form {...form}>
-              <form onSubmit={handleSubmit(onSubmit)}>
+              <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
                 <FormField
                   control={control}
                   name="departmentId"
@@ -143,13 +145,64 @@ const SubjectsCreate = () => {
                     </FormItem>
                   )}
                 />
+                <FormField
+                  control={control}
+                  name="name"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>
+                        Subject Name <span className="text-orange-600">*</span>
+                      </FormLabel>
+                      <FormControl>
+                        <Input placeholder="Intro to Programming" {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={control}
+                  name="code"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>
+                        Subject Code <span className="text-orange-600">*</span>
+                      </FormLabel>
+                      <FormControl>
+                        <Input placeholder="CS101" {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={control}
+                  name="description"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>
+                        Description <span className="text-orange-600">*</span>
+                      </FormLabel>
+                      <FormControl>
+                        <Textarea
+                          placeholder="Describe the subject focus..."
+                          className="min-h-28"
+                          {...field}
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+                <Button type="submit" size="lg" disabled={isSubmitting}>
+                  {isSubmitting ? "Creating..." : "Create Subject"}
+                </Button>
               </form>
             </Form>
           </CardContent>
         </Card>
       </div>
-
-      <Separator />
     </CreateView>
   );
 };
