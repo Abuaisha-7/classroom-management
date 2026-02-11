@@ -13,20 +13,19 @@ const router = express.Router();
 
 router.post("/", async (req, res) => {
   try {
+    const { name, code, description, departmentId } = req.body;
     const [createdSubject] = await db
       .insert(subjects)
-      .values({
-        ...req.body,
-      })
+      .values({ name, code, description, departmentId })
       .returning({ ...getTableColumns(subjects) });
 
-    if (!createdSubject) throw Error;
+    if (!createdSubject) throw new Error("Subject creation returned no rows");
 
     res.status(201).json({ data: createdSubject });
   } catch (e) {
     console.error(`POST /subjects failed with ${e}`);
 
-    res.status(500).json({ error: e });
+    res.status(500).json({ error: "Failed to create subject" });
   }
 });
 
@@ -162,8 +161,11 @@ router.get("/:id/classes", async (req, res) => {
       return res.status(400).json({ error: "Invalid subject id" });
     }
 
-    const currentPage = Math.max(1, +page);
-    const limitPerPage = Math.max(1, +limit);
+    const currentPage = Math.max(1, parseInt(String(page), 10) || 1);
+    const limitPerPage = Math.max(
+      1,
+      Math.min(100, parseInt(String(limit), 10) || 10),
+    );
     const offset = (currentPage - 1) * limitPerPage;
 
     const countResult = await db

@@ -280,7 +280,7 @@ const SubjectShowDetail = () => {
           {details.subject.department ? (
             <>
               <Link
-                to={`/department/${details.subject.department.id}`}
+                to={`/departments/show/${details.subject.department.id}`}
                 className="text-lg font-semibold text-foreground hover:underline"
               >
                 {details.subject.department.name}
@@ -314,7 +314,7 @@ const SubjectShowDetail = () => {
             <CardTitle>Teachers</CardTitle>
           </CardHeader>
           <CardContent>
-            <DataTable table={teachersTable} paginationVariant="simple" />
+            <DataTable table={teachersTable} />
           </CardContent>
         </Card>
 
@@ -323,7 +323,7 @@ const SubjectShowDetail = () => {
             <CardTitle>Students</CardTitle>
           </CardHeader>
           <CardContent>
-            <DataTable table={studentsTable} paginationVariant="simple" />
+            <DataTable table={studentsTable} />
           </CardContent>
         </Card>
       </div>
