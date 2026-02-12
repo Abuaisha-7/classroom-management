@@ -7,7 +7,7 @@ import routerProvider, {
   NavigateToResource,
   UnsavedChangesNotifier,
 } from "@refinedev/react-router";
-import { BookOpen, Building2, GraduationCap, Home } from "lucide-react";
+import { BookOpen, Building2, GraduationCap, Home, Users } from "lucide-react";
 import { BrowserRouter, Outlet, Route, Routes } from "react-router";
 import "./App.css";
 import { Layout } from "./components/refine-ui/layout/layout";
@@ -31,6 +31,8 @@ import SubjectEditPage from "./pages/subjects/edit";
 import SubjectShowDetail from "./pages/subjects/show";
 import { authProvider } from "./providers/auth";
 import dataProvider from "./providers/data";
+import FacultyList from "./pages/faculty/list";
+import FacultyShow from "./pages/faculty/show";
 
 function App() {
   return (
@@ -71,6 +73,15 @@ function App() {
                   meta: {
                     label: "Departments",
                     icon: <Building2 />,
+                  },
+                },
+                {
+                  name: "users",
+                  list: "/faculty",
+                  show: "/faculty/show/:id",
+                  meta: {
+                    label: "Faculty",
+                    icon: <Users />,
                   },
                 },
                 {
@@ -120,6 +131,11 @@ function App() {
                     <Route path="create" element={<DepartmentCreatePage />} />
                     <Route path="show/:id" element={<DepartmentDetailPage />} />
                     <Route path="edit/:id" element={<DepartmentEditPage />} />
+                  </Route>
+
+                  <Route path="faculty">
+                    <Route index element={<FacultyList />} />
+                    <Route path="show/:id" element={<FacultyShow />} />
                   </Route>
 
                   <Route path="classes">
