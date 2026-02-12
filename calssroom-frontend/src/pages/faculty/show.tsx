@@ -86,7 +86,7 @@ const FacultyShow = () => {
           const description = getValue<string>();
 
           return description ? (
-            <span className="truncate line-clamp-2">{description}</span>
+            <span className=" line-clamp-2">{description}</span>
           ) : (
             <span className="text-muted-foreground">No description</span>
           );
@@ -177,6 +177,9 @@ const FacultyShow = () => {
     columns: departmentColumns,
     refineCoreProps: {
       resource: `users/${userId}/departments`,
+      queryOptions: {
+        enabled: !!userId,
+      },
       pagination: {
         pageSize: 10,
         mode: "server",
@@ -188,6 +191,9 @@ const FacultyShow = () => {
     columns: subjectColumns,
     refineCoreProps: {
       resource: `users/${userId}/subjects`,
+      queryOptions: {
+        enabled: !!userId,
+      },
       pagination: {
         pageSize: 10,
         mode: "server",
@@ -242,7 +248,7 @@ const FacultyShow = () => {
             <p className="text-sm text-muted-foreground">
               Departments tied to {user.name} based on classes and enrollments.
             </p>
-            <DataTable table={departmentsTable}  />
+            <DataTable table={departmentsTable} />
           </CardContent>
         </Card>
 

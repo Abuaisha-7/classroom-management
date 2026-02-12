@@ -1,7 +1,13 @@
 import { and, desc, eq, getTableColumns, ilike, or, sql } from "drizzle-orm";
 import express from "express";
 import { db } from "../db/db.js";
-import { classes, departments, enrollments, subjects, user } from "../db/schema/index.js";
+import {
+  classes,
+  departments,
+  enrollments,
+  subjects,
+  user,
+} from "../db/schema/index.js";
 
 const router = express.Router();
 
@@ -111,8 +117,11 @@ router.get("/:id/departments", async (req, res) => {
       });
     }
 
-    const currentPage = Math.max(1, +page);
-    const limitPerPage = Math.max(1, +limit);
+    const currentPage = Math.max(1, parseInt(String(page), 10) || 1);
+    const limitPerPage = Math.max(
+      1,
+      Math.min(100, parseInt(String(limit), 10) || 10),
+    );
     const offset = (currentPage - 1) * limitPerPage;
 
     const countResult =
@@ -217,8 +226,11 @@ router.get("/:id/subjects", async (req, res) => {
       });
     }
 
-    const currentPage = Math.max(1, +page);
-    const limitPerPage = Math.max(1, +limit);
+    const currentPage = Math.max(1, parseInt(String(page), 10) || 1);
+    const limitPerPage = Math.max(
+      1,
+      Math.min(100, parseInt(String(limit), 10) || 10),
+    );
     const offset = (currentPage - 1) * limitPerPage;
 
     const countResult =
@@ -263,7 +275,7 @@ router.get("/:id/subjects", async (req, res) => {
               departments.name,
               departments.description,
               departments.createdAt,
-              departments.updatedAt
+              departments.updatedAt,
             )
             .orderBy(desc(subjects.createdAt))
             .limit(limitPerPage)
@@ -293,7 +305,7 @@ router.get("/:id/subjects", async (req, res) => {
               departments.name,
               departments.description,
               departments.createdAt,
-              departments.updatedAt
+              departments.updatedAt,
             )
             .orderBy(desc(subjects.createdAt))
             .limit(limitPerPage)

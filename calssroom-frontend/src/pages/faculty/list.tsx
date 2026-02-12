@@ -9,7 +9,7 @@ import { User } from "@/types";
 import { useTable } from "@refinedev/react-table";
 import { ColumnDef } from "@tanstack/react-table";
 import { Search } from "lucide-react";
-import { useMemo, useState } from "react";
+import { useMemo } from "react";
 import { useSearchParams } from "react-router";
 
 const getInitials = (name = "") => {
@@ -22,10 +22,16 @@ const getInitials = (name = "") => {
 };
 
 const FacultyList = () => {
-  const [searchParams] = useSearchParams();
-  const [searchQuery, setSearchQuery] = useState(
-    searchParams.get("search") ?? "",
-  );
+  const [searchParams, setSearchParams] = useSearchParams();
+  const searchQuery = searchParams.get("search") ?? "";
+
+  const setSearchQuery = (value: string) => {
+    setSearchParams((prev) => {
+      if (value) prev.set("search", value);
+      else prev.delete("search");
+      return prev;
+    });
+  };
 
   const facultyColumns = useMemo<ColumnDef<User>[]>(
     () => [
