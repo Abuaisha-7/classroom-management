@@ -22,7 +22,7 @@ import { useNavigate } from "react-router";
 import z from "zod";
 
 const joinSchema = z.object({
-  inviteCode: z.string().min(3, "Invite code is required"),
+  inviteCode: z.string().min(3, "Invite code must be at least 3 characters"),
 });
 
 type JoinFormValues = z.infer<typeof joinSchema>;

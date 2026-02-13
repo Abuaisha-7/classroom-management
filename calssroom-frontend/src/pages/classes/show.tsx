@@ -105,6 +105,9 @@ const ClassesShow = () => {
           },
         ],
       },
+      queryOptions: {
+        enabled: !!classId,
+      },
     },
   });
 
@@ -224,7 +227,11 @@ const ClassesShow = () => {
           </ol>
         </div>
 
-        <Button size={"lg"} className="w-full" onClick={() => navigate("/enrollments/join")}>
+        <Button
+          size={"lg"}
+          className="w-full"
+          onClick={() => navigate("/enrollments/join")}
+        >
           Join Class
         </Button>
       </Card>

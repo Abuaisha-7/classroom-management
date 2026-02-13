@@ -1,4 +1,4 @@
-import { and, eq, getTableColumns } from "drizzle-orm";
+import { and, count, eq, getTableColumns } from "drizzle-orm";
 import express from "express";
 import { db } from "../db/db";
 import {
@@ -42,7 +42,6 @@ const getEnrollmentDetails = async (enrollmentId: number) => {
 
 router.post("/", async (req, res) => {
   try {
-    console.log(req.body);
     const { classId, studentId } = req.body;
 
     if (!classId || !studentId) {
@@ -57,6 +56,21 @@ router.post("/", async (req, res) => {
       .where(eq(classes.id, classId));
 
     if (!classRecord) return res.status(404).json({ error: "Class not found" });
+
+    // --- NEW: CAPACITY CHECK ---
+    const [enrollmentResult] = await db
+      .select({ value: count() })
+      .from(enrollments)
+      .where(eq(enrollments.classId, classId));
+
+    const currentCount = enrollmentResult?.value ?? 0;
+
+    if (classRecord.capacity !== null && currentCount >= classRecord.capacity) {
+      return res
+        .status(409)
+        .json({ error: "Class has reached maximum capacity" });
+    }
+    // ---------------------------
 
     const [student] = await db
       .select()
@@ -114,6 +128,21 @@ router.post("/join", async (req, res) => {
       .where(eq(classes.inviteCode, inviteCode));
 
     if (!classRecord) return res.status(404).json({ error: "Class not found" });
+
+    // --- NEW: CAPACITY CHECK ---
+    const [enrollmentResult] = await db
+      .select({ value: count() })
+      .from(enrollments)
+      .where(eq(enrollments.classId, classRecord.id));
+
+    const currentCount = enrollmentResult?.value ?? 0;
+
+    if (classRecord.capacity !== null && currentCount >= classRecord.capacity) {
+      return res
+        .status(409)
+        .json({ error: "Class has reached maximum capacity" });
+    }
+    // ---------------------------
 
     const [student] = await db
       .select()

@@ -61,7 +61,6 @@ const EnrollmentsCreatePage = () => {
   const selectedClassId = form.watch("classId");
 
   const onSubmit = async (values: EnrollFormValues) => {
-    console.log(values);
     if (!currentUser?.id) return;
     try {
       const response = await createEnrollment({
