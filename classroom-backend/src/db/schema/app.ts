@@ -5,10 +5,8 @@ import {
   jsonb,
   pgEnum,
   pgTable,
-  primaryKey,
   text,
   timestamp,
-  unique,
   varchar,
 } from "drizzle-orm/pg-core";
 import { user } from "./auth.js";
@@ -75,22 +73,24 @@ export const classes = pgTable(
 export const enrollments = pgTable(
   "enrollments",
   {
+    id: integer("id").primaryKey().generatedAlwaysAsIdentity(),
     studentId: text("student_id")
       .notNull()
       .references(() => user.id, { onDelete: "cascade" }),
     classId: integer("class_id")
       .notNull()
       .references(() => classes.id, { onDelete: "cascade" }),
+
+    ...timestamps,
   },
-  (table) => [
-    primaryKey({ columns: [table.studentId, table.classId] }),
-    unique("enrollments_student_id_class_id_unique").on(
+  (table) => ({
+    studentIdIdx: index("enrollments_student_id_idx").on(table.studentId),
+    classIdIdx: index("enrollments_class_id_idx").on(table.classId),
+    studentClassUnique: index("enrollments_student_class_unique").on(
       table.studentId,
       table.classId,
     ),
-    index("enrollments_student_id_idx").on(table.studentId),
-    index("enrollments_class_id_idx").on(table.classId),
-  ],
+  }),
 );
 
 export const departmentRelations = relations(departments, ({ many }) => ({
