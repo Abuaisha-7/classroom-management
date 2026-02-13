@@ -7,7 +7,7 @@ import routerProvider, {
   NavigateToResource,
   UnsavedChangesNotifier,
 } from "@refinedev/react-router";
-import { BookOpen, Building2, GraduationCap, Home, Users } from "lucide-react";
+import { BookOpen, Building2, ClipboardCheck, GraduationCap, Home, Users } from "lucide-react";
 import { BrowserRouter, Outlet, Route, Routes } from "react-router";
 import "./App.css";
 import { Layout } from "./components/refine-ui/layout/layout";
@@ -33,6 +33,9 @@ import { authProvider } from "./providers/auth";
 import dataProvider from "./providers/data";
 import FacultyList from "./pages/faculty/list";
 import FacultyShow from "./pages/faculty/show";
+import EnrollmentsCreatePage from "./pages/enrollments/create";
+import EnrollmentsJoinPage from "./pages/enrollments/join";
+import EnrollmentsConfirmPage from "./pages/enrollments/confirm";
 
 function App() {
   return (
@@ -82,6 +85,15 @@ function App() {
                   meta: {
                     label: "Faculty",
                     icon: <Users />,
+                  },
+                },
+                 {
+                  name: "enrollments",
+                  list: "/enrollments/create",
+                  create: "/enrollments/create",
+                  meta: {
+                    label: "Enrollments",
+                    icon: <ClipboardCheck />,
                   },
                 },
                 {
@@ -136,6 +148,12 @@ function App() {
                   <Route path="faculty">
                     <Route index element={<FacultyList />} />
                     <Route path="show/:id" element={<FacultyShow />} />
+                  </Route>
+
+                   <Route path="enrollments">
+                    <Route path="create" element={<EnrollmentsCreatePage />} />
+                    <Route path="join" element={<EnrollmentsJoinPage />} />
+                    <Route path="confirm" element={<EnrollmentsConfirmPage />} />
                   </Route>
 
                   <Route path="classes">

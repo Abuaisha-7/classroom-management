@@ -11,6 +11,7 @@ import subjectsRouter from "./routes/subjects.js";
 import usersRouter from "./routes/users.js";
 import classesRouter from "./routes/classes.js";
 import departmentsRouter from "./routes/departments.js";
+import enrollmentsRouter from "./routes/enrollments.js";
 
 const app = express();
 const PORT = 3000;
@@ -39,6 +40,7 @@ app.use("/api/subjects", subjectsRouter);
 app.use("/api/users", usersRouter);
 app.use("/api/classes", classesRouter);
 app.use("/api/departments", departmentsRouter);
+app.use("/api/enrollments", enrollmentsRouter);
 
 
 app.get("/", (req, res) => {
