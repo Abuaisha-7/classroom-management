@@ -146,6 +146,7 @@ const ClassesShow = () => {
     capacity,
     bannerCldPubId,
     subject,
+    bannerUrl,
     teacher,
     department,
   } = classDetails;
@@ -154,12 +155,24 @@ const ClassesShow = () => {
     <ShowView className="class-view class-show">
       <ShowViewHeader resource="classes" title="Class Details" />
 
-      <div className="banner">
-        {bannerCldPubId ? (
-          <AdvancedImage
-            alt="Class Banner"
-            cldImg={bannerPhoto(bannerCldPubId, name)}
-          />
+       <div className="banner">
+        {bannerUrl ? (
+          bannerUrl.includes("res.cloudinary.com") &&
+          bannerCldPubId ? (
+            <AdvancedImage
+              cldImg={bannerPhoto(
+               bannerCldPubId ?? "",
+                name
+              )}
+              alt="Class Banner"
+            />
+          ) : (
+            <img
+              src={bannerUrl}
+              alt={name}
+              loading="lazy"
+            />
+          )
         ) : (
           <div className="placeholder" />
         )}

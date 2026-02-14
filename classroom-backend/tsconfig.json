@@ -30,5 +30,5 @@
     /* Environment types */
     "types": ["node"]
   },
-  "include": ["src", "*.config.ts", "env.d.ts"]
+  "include": ["src", "seed","*.config.ts", "env.d.ts"]
 }

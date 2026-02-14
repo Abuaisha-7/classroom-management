@@ -8,6 +8,13 @@
       "when": 1770987017971,
       "tag": "0000_mushy_giant_man",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1771058154284,
+      "tag": "0001_red_gabe_jones",
+      "breakpoints": true
     }
   ]
 }
