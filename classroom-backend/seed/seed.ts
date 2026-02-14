@@ -1,11 +1,17 @@
+import { inArray } from "drizzle-orm";
 import { readFile } from "fs/promises";
 import path from "path";
 import { fileURLToPath } from "url";
 import { db } from "../src/db/db";
-import { account, classes, departments, enrollments, session, subjects, user } from "../src/db/schema";
-import { inArray } from "drizzle-orm";
-
-
+import {
+  account,
+  classes,
+  departments,
+  enrollments,
+  session,
+  subjects,
+  user,
+} from "../src/db/schema";
 
 type SeedUser = {
   id: string;
@@ -70,7 +76,6 @@ const ensureMapValue = <T>(map: Map<string, T>, key: string, label: string) => {
   return value;
 };
 
-
 const seed = async () => {
   const data = await loadSeedData();
 
@@ -93,7 +98,7 @@ const seed = async () => {
           emailVerified: true,
           image: seedUser.image,
           role: seedUser.role,
-        }))
+        })),
       )
       .onConflictDoNothing({ target: user.id });
 
@@ -106,7 +111,7 @@ const seed = async () => {
           accountId: seedUser.email,
           providerId: "credentials",
           password: seedUser.password,
-        }))
+        })),
       )
       .onConflictDoNothing({ target: [account.providerId, account.accountId] });
   }
@@ -119,7 +124,7 @@ const seed = async () => {
           code: dept.code,
           name: dept.name,
           description: dept.description,
-        }))
+        })),
       )
       .onConflictDoNothing({ target: departments.code });
   }
@@ -133,7 +138,7 @@ const seed = async () => {
           .from(departments)
           .where(inArray(departments.code, departmentCodes));
   const departmentMap = new Map(
-    departmentRows.map((row) => [row.code, row.id])
+    departmentRows.map((row) => [row.code, row.id]),
   );
 
   if (data.subjects.length) {
@@ -144,7 +149,7 @@ const seed = async () => {
       departmentId: ensureMapValue(
         departmentMap,
         subject.departmentCode,
-        "department"
+        "department",
       ),
     }));
 
@@ -185,7 +190,7 @@ const seed = async () => {
   }
 
   const classInviteCodes = data.classes.map(
-    (classItem) => classItem.inviteCode
+    (classItem) => classItem.inviteCode,
   );
   const classRows =
     classInviteCodes.length === 0
@@ -195,6 +200,18 @@ const seed = async () => {
           .from(classes)
           .where(inArray(classes.inviteCode, classInviteCodes));
   const classMap = new Map(classRows.map((row) => [row.inviteCode, row.id]));
+
+  if (data.enrollments.length) {
+    const enrollmentsToInsert = data.enrollments.map((enrollment) => ({
+      studentId: enrollment.studentId,
+      classId: ensureMapValue(classMap, enrollment.classInviteCode, "class"),
+    }));
+
+    await db
+      .insert(enrollments)
+      .values(enrollmentsToInsert)
+      .onConflictDoNothing();
+  }
 };
 
 seed()
