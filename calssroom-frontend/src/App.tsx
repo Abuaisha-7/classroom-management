@@ -103,6 +103,9 @@ function App() {
                   show: "/classes/show/:id",
                   meta: { label: "Classes", icon: <GraduationCap /> },
                 },
+                {
+                  name: "stats"
+                }
               ]}
             >
               <Routes>

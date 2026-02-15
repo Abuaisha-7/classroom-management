@@ -1,8 +1,8 @@
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
-import { Department, Subject, User } from "@/types";
-import { useLink, useList } from "@refinedev/core";
+import { BACKEND_BASE_URL } from "@/constants";
+import { useCustom, useLink } from "@refinedev/core";
 import {
   BookOpen,
   Building2,
@@ -24,105 +24,104 @@ import {
   YAxis,
 } from "recharts";
 
-type ClassListItem = {
-  id: number;
-  name: string;
-  createdAt?: string;
-  subject?: {
+type LatestData = {
+  latestClasses: {
+    id: number;
     name: string;
-  };
-  teacher?: {
+    createdAt?: string;
+    subject: {
+      createdAt: Date;
+      updatedAt: Date;
+      id: number;
+      departmentId: number;
+      name: string;
+      code: string;
+      description: string | null;
+    } | null;
+    teacher?: {
+      name: string;
+    };
+  }[]; // ✅ FIXED
+
+  latestTeachers: {
+    createdAt: Date;
+    updatedAt: Date;
+    id: string;
     name: string;
-  };
+    email: string;
+    emailVerified: boolean;
+    image: string | null;
+    role: "student" | "teacher" | "admin";
+    imageCldPubId: string | null;
+  }[];
+};
+
+type OverviewCount = {
+  users: number;
+  teachers: number;
+  admins: number;
+  subjects: number;
+  departments: number;
+  classes: number;
+};
+
+type ChartsData = {
+  usersByRole: { role: string; total: number }[];
+  subjectsByDepartment: { departmentName: string; totalSubjects: number }[];
+  classesBySubject: { subjectName: string; totalClasses: number }[];
 };
 
 const roleColors = ["#f97316", "#0ea5e9", "#22c55e", "#a855f7"];
 
 const Dashboard = () => {
   const Link = useLink();
-  const { query: usersQuery } = useList<User>({
-    resource: "users",
-    pagination: { mode: "off" },
+
+  // Aggregates for charts
+  const { query: chartsQuery } = useCustom<{ data: ChartsData }>({
+    url: `${BACKEND_BASE_URL}stats/charts`,
+    method: "get",
   });
 
-  const { query: subjectsQuery } = useList<Subject>({
-    resource: "subjects",
-    pagination: { mode: "off" },
-  });
-
-  const { query: departmentsQuery } = useList<Department>({
-    resource: "departments",
-    pagination: { mode: "off" },
-  });
-
-  const { query: classesQuery } = useList<ClassListItem>({
-    resource: "classes",
-    pagination: { mode: "off" },
-  });
-
-  const users = usersQuery.data?.data ?? [];
-  const subjects = subjectsQuery.data?.data ?? [];
-  const departments = departmentsQuery.data?.data ?? [];
-  const classes = classesQuery.data?.data ?? [];
+  // Get the data safely
+  const charts = chartsQuery.data?.data?.data;
 
   const usersByRole = useMemo(() => {
-    const counts = users.reduce<Record<string, number>>((acc, user) => {
-      const role = user.role ?? "unknown";
-      acc[role] = (acc[role] || 0) + 1;
-      return acc;
-    }, {});
-
-    return Object.entries(counts).map(([role, total]) => ({ role, total }));
-  }, [users]);
+    return charts?.usersByRole ?? [];
+  }, [charts]);
 
   const subjectsByDepartment = useMemo(() => {
-    const counts = subjects.reduce<Record<string, number>>((acc, subject) => {
-      const departmentName =
-        (subject as { department?: { name?: string } }).department?.name ??
-        "Unassigned";
-      acc[departmentName] = (acc[departmentName] || 0) + 1;
-      return acc;
-    }, {});
-
-    return Object.entries(counts).map(([departmentName, totalSubjects]) => ({
-      departmentName,
-      totalSubjects,
-    }));
-  }, [subjects]);
+    return charts?.subjectsByDepartment ?? [];
+  }, [charts]);
 
   const classesBySubject = useMemo(() => {
-    const counts = classes.reduce<Record<string, number>>((acc, classItem) => {
-      const subjectName = classItem.subject?.name ?? "Unassigned";
-      acc[subjectName] = (acc[subjectName] || 0) + 1;
-      return acc;
-    }, {});
+    return charts?.classesBySubject ?? [];
+  }, [charts]);
 
-    return Object.entries(counts).map(([subjectName, totalClasses]) => ({
-      subjectName,
-      totalClasses,
-    }));
-  }, [classes]);
+  // Overview counts for core entities
+  const { query: overviewQuery } = useCustom<{ data: OverviewCount }>({
+    url: `${BACKEND_BASE_URL}stats/overview`,
+    method: "get",
+    queryOptions: {
+      staleTime: 1000 * 60 * 5,
+      refetchOnWindowFocus: false,
+    },
+  });
 
-  const newestClasses = useMemo(() => {
-    return [...classes]
-      .sort((a, b) => {
-        const aTime = a.createdAt ? new Date(a.createdAt).getTime() : 0;
-        const bTime = b.createdAt ? new Date(b.createdAt).getTime() : 0;
-        return bTime - aTime;
-      })
-      .slice(0, 5);
-  }, [classes]);
+  const overviewCount = useMemo(() => {
+    return overviewQuery.data?.data?.data;
+  }, [overviewQuery.data]);
 
-  const newestTeachers = useMemo(() => {
-    return users
-      .filter((user) => user.role === "teacher")
-      .sort((a, b) => {
-        const aTime = a.createdAt ? new Date(a.createdAt).getTime() : 0;
-        const bTime = b.createdAt ? new Date(b.createdAt).getTime() : 0;
-        return bTime - aTime;
-      })
-      .slice(0, 5);
-  }, [users]);
+  // Latest activity summaries
+
+  const { query: latestQuery } = useCustom<{ data: LatestData }>({
+    url: `${BACKEND_BASE_URL}stats/latest`,
+    method: "get",
+  });
+
+  const latest = latestQuery.data?.data?.data;
+
+  const newestClasses = latest?.latestClasses ?? [];
+  const newestTeachers = latest?.latestTeachers ?? [];
 
   const topDepartments = useMemo(() => {
     return [...subjectsByDepartment]
@@ -144,44 +143,47 @@ const Dashboard = () => {
       }));
   }, [classesBySubject]);
 
-  const kpis = [
-    {
-      label: "Total Users",
-      value: users.length,
-      icon: Users,
-      accent: "text-blue-600",
-    },
-    {
-      label: "Teachers",
-      value: users.filter((user) => user.role === "teacher").length,
-      icon: GraduationCap,
-      accent: "text-emerald-600",
-    },
-    {
-      label: "Admins",
-      value: users.filter((user) => user.role === "admin").length,
-      icon: ShieldCheck,
-      accent: "text-amber-600",
-    },
-    {
-      label: "Subjects",
-      value: subjects.length,
-      icon: BookOpen,
-      accent: "text-purple-600",
-    },
-    {
-      label: "Departments",
-      value: departments.length,
-      icon: Building2,
-      accent: "text-cyan-600",
-    },
-    {
-      label: "Classes",
-      value: classes.length,
-      icon: Layers,
-      accent: "text-rose-600",
-    },
-  ];
+  const kpis = useMemo(
+    () => [
+      {
+        label: "Total Users",
+        value: overviewCount?.users ?? 0,
+        icon: Users,
+        accent: "text-blue-600",
+      },
+      {
+        label: "Teachers",
+        value: overviewCount?.teachers ?? 0,
+        icon: GraduationCap,
+        accent: "text-emerald-600",
+      },
+      {
+        label: "Admins",
+        value: overviewCount?.admins ?? 0,
+        icon: ShieldCheck,
+        accent: "text-amber-600",
+      },
+      {
+        label: "Subjects",
+        value: overviewCount?.subjects ?? 0,
+        icon: BookOpen,
+        accent: "text-purple-600",
+      },
+      {
+        label: "Departments",
+        value: overviewCount?.departments ?? 0,
+        icon: Building2,
+        accent: "text-cyan-600",
+      },
+      {
+        label: "Classes",
+        value: overviewCount?.classes ?? 0,
+        icon: Layers,
+        accent: "text-rose-600",
+      },
+    ],
+    [overviewCount],
+  );
 
   return (
     <div className="space-y-6">
@@ -222,16 +224,17 @@ const Dashboard = () => {
             <CardTitle>Users by Role</CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
-            <div className="h-72">
+            <div className="h-96 w-full">
               <ResponsiveContainer width="100%" height="100%">
                 <PieChart>
                   <Pie
                     dataKey="total"
                     nameKey="role"
                     data={usersByRole}
-                    innerRadius={60}
-                    outerRadius={100}
+                    innerRadius={90}
+                    outerRadius={160}
                     paddingAngle={3}
+                    scale={5}
                   >
                     {usersByRole.map((entry, index) => (
                       <Cell
@@ -245,7 +248,7 @@ const Dashboard = () => {
               </ResponsiveContainer>
             </div>
 
-            <div className="flex flex-wrap gap-2">
+            <div className="flex flex-wrap gap-2 pt-20">
               {usersByRole.map((entry, index) => (
                 <span
                   key={entry.role}
@@ -270,12 +273,27 @@ const Dashboard = () => {
               <CardTitle>New Classes (last 5)</CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="text-3xl font-semibold">
-                {newestClasses.length}
-              </div>
-              <p className="text-sm text-muted-foreground">
-                Most recent classes added
-              </p>
+              {newestClasses.length === 0 ? (
+                <p className="text-sm text-muted-foreground">No classes yet</p>
+              ) : (
+                <div className="space-y-2">
+                  {newestClasses.map((cls, index) => (
+                    <div
+                      key={cls.id}
+                      className="flex items-center justify-between rounded-md border border-transparent px-3 py-1 transition-colors hover:border-primary/30 hover:bg-muted/40"
+                    >
+                      <div className="flex items-center gap-3">
+                        <span className="text-xs font-semibold text-muted-foreground">
+                          #{index + 1}
+                        </span>
+                        <span className="text-muted-foreground">
+                          {cls.name}
+                        </span>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
             </CardContent>
           </Card>
           <Card className="hover:shadow-md transition-shadow">
@@ -283,12 +301,27 @@ const Dashboard = () => {
               <CardTitle>New Teachers (last 5)</CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="text-3xl font-semibold">
-                {newestTeachers.length}
-              </div>
-              <p className="text-sm text-muted-foreground">
-                Most recent teachers added
-              </p>
+              {newestClasses.length === 0 ? (
+                <p className="text-sm text-muted-foreground">No classes yet</p>
+              ) : (
+                <div className="space-y-2">
+                  {newestTeachers.map((teacher, index) => (
+                    <div
+                      key={teacher.id}
+                      className="flex items-center justify-between rounded-md border border-transparent px-3 py-1 transition-colors hover:border-primary/30 hover:bg-muted/40"
+                    >
+                      <div className="flex items-center gap-3">
+                        <span className="text-xs font-semibold text-muted-foreground">
+                          #{index + 1}
+                        </span>
+                        <span className="text-muted-foreground">
+                          {teacher.name}
+                        </span>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
             </CardContent>
           </Card>
         </div>
