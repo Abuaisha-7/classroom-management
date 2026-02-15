@@ -27,6 +27,7 @@ const getInitials = (name = "") => {
   }`.toUpperCase();
 };
 
+
 type ClassUser = {
   id: string;
   name: string;
