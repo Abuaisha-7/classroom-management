@@ -9,5 +9,7 @@
     "neondatabase",
     "refinedev",
     "vaul"
-  ]
+  ],
+  "CodeGPT.apiKey": "Anthropic",
+  "postman.settings.dotenv-detection-notification-visibility": false
 }
