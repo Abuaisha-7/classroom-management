@@ -111,7 +111,7 @@ const DepartmentDetailPage = () => {
           const description = getValue<string>();
 
           return description ? (
-            <span className="truncate line-clamp-2">{description}</span>
+            <span className=" line-clamp-2">{description}</span>
           ) : (
             <span className="text-muted-foreground">No description</span>
           );
@@ -287,6 +287,9 @@ const DepartmentDetailPage = () => {
         pageSize: 10,
         mode: "server",
       },
+      queryOptions: {
+        enabled: !!departmentId,
+      },
     },
   });
 
@@ -297,6 +300,9 @@ const DepartmentDetailPage = () => {
       pagination: {
         pageSize: 10,
         mode: "server",
+      },
+      queryOptions: {
+        enabled: !!departmentId,
       },
     },
   });
@@ -318,6 +324,9 @@ const DepartmentDetailPage = () => {
           },
         ],
       },
+      queryOptions: {
+        enabled: !!departmentId,
+      },
     },
   });
 
@@ -337,6 +346,9 @@ const DepartmentDetailPage = () => {
             value: "student",
           },
         ],
+      },
+      queryOptions: {
+        enabled: !!departmentId,
       },
     },
   });

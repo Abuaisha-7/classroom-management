@@ -120,7 +120,7 @@ router.get("/:id", async (req, res) => {
     const [subjectsCount, classesCount, enrolledStudentsCount] =
       await Promise.all([
         db
-          .select({ count: sql<number>`count(*)` })
+          .select({ count: sql<number>`cast(count(*) as int)` })
           .from(subjects)
           .where(eq(subjects.departmentId, departmentId)),
         db
@@ -168,8 +168,11 @@ router.get("/:id/subjects", async (req, res) => {
       return res.status(400).json({ error: "Invalid department id" });
     }
 
-    const currentPage = Math.max(1, +page);
-    const limitPerPage = Math.max(1, +limit);
+    const currentPage = Math.max(1, parseInt(String(page), 10) || 1);
+    const limitPerPage = Math.max(
+      1,
+      Math.min(100, parseInt(String(limit), 10) || 10),
+    );
     const offset = (currentPage - 1) * limitPerPage;
 
     const countResult = await db
@@ -214,8 +217,11 @@ router.get("/:id/classes", async (req, res) => {
       return res.status(400).json({ error: "Invalid department id" });
     }
 
-    const currentPage = Math.max(1, +page);
-    const limitPerPage = Math.max(1, +limit);
+    const currentPage = Math.max(1, parseInt(String(page), 10) || 1);
+    const limitPerPage = Math.max(
+      1,
+      Math.min(100, parseInt(String(limit), 10) || 10),
+    );
     const offset = (currentPage - 1) * limitPerPage;
 
     const countResult = await db
@@ -273,8 +279,11 @@ router.get("/:id/users", async (req, res) => {
       return res.status(400).json({ error: "Invalid role" });
     }
 
-    const currentPage = Math.max(1, +page);
-    const limitPerPage = Math.max(1, +limit);
+    const currentPage = Math.max(1, parseInt(String(page), 10) || 1);
+    const limitPerPage = Math.max(
+      1,
+      Math.min(100, parseInt(String(limit), 10) || 10),
+    );
     const offset = (currentPage - 1) * limitPerPage;
 
     const baseSelect = {
@@ -309,7 +318,7 @@ router.get("/:id/users", async (req, res) => {
             .leftJoin(classes, eq(user.id, classes.teacherId))
             .leftJoin(subjects, eq(classes.subjectId, subjects.id))
             .where(
-              and(eq(user.role, role), eq(subjects.departmentId, departmentId))
+              and(eq(user.role, role), eq(subjects.departmentId, departmentId)),
             )
         : await db
             .select({ count: sql<number>`count(distinct ${user.id})` })
@@ -318,7 +327,7 @@ router.get("/:id/users", async (req, res) => {
             .leftJoin(classes, eq(enrollments.classId, classes.id))
             .leftJoin(subjects, eq(classes.subjectId, subjects.id))
             .where(
-              and(eq(user.role, role), eq(subjects.departmentId, departmentId))
+              and(eq(user.role, role), eq(subjects.departmentId, departmentId)),
             );
 
     const totalCount = countResult[0]?.count ?? 0;
@@ -331,7 +340,7 @@ router.get("/:id/users", async (req, res) => {
             .leftJoin(classes, eq(user.id, classes.teacherId))
             .leftJoin(subjects, eq(classes.subjectId, subjects.id))
             .where(
-              and(eq(user.role, role), eq(subjects.departmentId, departmentId))
+              and(eq(user.role, role), eq(subjects.departmentId, departmentId)),
             )
             .groupBy(...groupByFields)
             .orderBy(desc(user.createdAt))
@@ -344,7 +353,7 @@ router.get("/:id/users", async (req, res) => {
             .leftJoin(classes, eq(enrollments.classId, classes.id))
             .leftJoin(subjects, eq(classes.subjectId, subjects.id))
             .where(
-              and(eq(user.role, role), eq(subjects.departmentId, departmentId))
+              and(eq(user.role, role), eq(subjects.departmentId, departmentId)),
             )
             .groupBy(...groupByFields)
             .orderBy(desc(user.createdAt))
