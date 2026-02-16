@@ -1,6 +1,6 @@
 import { and, count, eq, getTableColumns } from "drizzle-orm";
 import express from "express";
-import { db } from "../db/db";
+import { db } from "../db/db.js";
 import {
   classes,
   departments,
